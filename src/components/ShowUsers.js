@@ -10,7 +10,17 @@ const ShowUsers = () => {
     const [id, setId] = useState('');
     const [firstname, setFirstmame] = useState('');
     const [lastname, setLastname] = useState('');
-    const [active, setActive] = useState('');
+    const [active, setActive] = useState(1);
+
+    useEffect(() => {
+        getUsers();
+    }, []);
+
+    const getUsers = async() => {
+        const response = await axios.get(url);
+        setUsers(response.data);
+    }
+
     return (
         <div>ShowUsers</div>
     )
