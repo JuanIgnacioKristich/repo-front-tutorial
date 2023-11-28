@@ -4,41 +4,41 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { show_alert } from '../functions';
 
-
-const ShowUsers = () => {
-    const url ="http://localhost:3000/api/users/";
-    const [users, setUsers] = useState([])
+const ShowProducts = () => {
+    const url = "http://localhost:3000/api/products/";
+    const [prod, setProducts] = useState([]);
     const [id, setId] = useState('');
     const [firstname, setFirstname] = useState('');
-    const [Email, setEmail] = useState('');
-    const [Password, setPassword] = useState('');
+    const [Price, setPrice] = useState('');
+    const [img, setImg] = useState('')
     const [title, setTitle] = useState('');
     const [operation, setOperation] = useState(1);
 
     useEffect(() => {
-        getUsers();
+        getProducts();
     }, []);
-
-    const getUsers = async () => {
+    
+    const getProducts = async () => {
         const response = await axios.get(url);
-        setUsers(response.data);
+        setProducts(response.data);
     }
+ 
 
-    const openModal = (op, id, firstname, Email, Password) => {
+    const openModal = (op, id, firstname, Price) => {
         setId('');
         setFirstname('');
-        setEmail('');
-        setPassword ('');
+        setPrice('');
+        setImg('');
         setOperation(op);
         if (op === 1) {
-            setTitle('Registrar Usuario');
+            setTitle('Añadir Producto');
         }
         else if (op === 2) {
-            setTitle('Editar Usuario');
+            setTitle('Editar Producto');
             setId(id);
             setFirstname(firstname);
-            setPassword(Password);
-            setEmail(Email);
+            setPrice(Price);
+            setImg(img);
         }
         window.setTimeout(function () {
             document.getElementById('firstname').focus();
@@ -51,19 +51,16 @@ const ShowUsers = () => {
         if (firstname.trim() === '') {
             show_alert('Escribe el firstname del usuario', 'warning');
         }
-        else if (Email.trim() === '') {
-            show_alert('Escribe el Email del usuario', 'warning');
-        }
-        else if (Password.trim() === '') {
-            show_alert('Escribe el Email del usuario', 'warning');
+        else if (Price.trim() === '') {
+            show_alert('Escribe el Price producto', 'warning');
         }
         else {
             if (operation === 1) {
-                parametros = { firstname: firstname.trim(), Email: Email.trim(), Password: Password.trim() };
+                parametros = { firstname: firstname.trim(), Price: Price.trim(), img: img.trim() };
                 metodo = 'POST';
             }
             else {
-                parametros = { id: id, firstname: firstname.trim(), Email: Email.trim(), Password: Password.trim() };
+                parametros = { id: id, firstname: firstname.trim(), Price: Price.trim(), img: img.trim() };
                 metodo = 'PUT';
             }
             enviarSolicitud(metodo, parametros);
@@ -80,7 +77,7 @@ const ShowUsers = () => {
                 show_alert(msj, tipo);
                 if (tipo === 'success') {
                     document.getElementById('btnCerrar').click();
-                    getUsers();
+                    getProducts();
                 }
             })
             .catch(function (error) {
@@ -112,7 +109,7 @@ const ShowUsers = () => {
                 <div className='row mt-3'>
                     <div className='col-md-4 offset-md-4'>
                         <div className='d-grid mx-auto'>
-                            <button onClick={() => openModal(1)} className='btn btn-dark' data-bs-toggle='modal' data-bs-target='#modalUsers'>
+                            <button onClick={() => openModal(1)} className='btn btn-dark' data-bs-toggle='modal' data-bs-target='#modalProducts'>
                                 <i className='fa-solid fa-circle-plus'></i> Añadir
                             </button>
                         </div>
@@ -123,22 +120,22 @@ const ShowUsers = () => {
                         <div className='table-responsive'>
                             <table className='table table-bordered'>
                                 <thead>
-                                    <tr><th>#</th><th>First Name</th><th>Email</th><th>Password</th><th></th></tr>
+                                    <tr><th>#</th><th>First Name</th><th>Last Name</th><th>Img</th><th></th></tr>
                                 </thead>
                                 <tbody className='table-group-divider'>
-                                    {users.map((user, i) => (
-                                        <tr key={user.id}>
+                                    {prod.map((prod, i) => (
+                                        <tr key={prod.id}>
                                             <td>{(i + 1)}</td>
-                                            <td>{user.firstname}</td>
-                                            <td>{user.Email}</td>
-                                            <td>{user.Password}</td>
+                                            <td>{prod.firstname}</td>
+                                            <td>{prod.Price}</td>
+                                            <td>{prod.img}</td>
                                             <td>
-                                                <button onClick={() => openModal(2, user.id, user.firstname, user.Email, user.Password)}
-                                                    className='btn btn-warning' data-bs-toggle='modal' data-bs-target='#modalUsers'>
+                                                <button onClick={() => openModal(2, prod.id, prod.firstname, prod.Price)}
+                                                    className='btn btn-warning' data-bs-toggle='modal' data-bs-target='#modalProducts'>
                                                     <i className='fa-solid fa-edit'></i>
                                                 </button>
                                                 &nbsp;
-                                                <button onClick={() => deleteProduct(user.id, user.firstname)} className='btn btn-danger'>
+                                                <button onClick={() => deleteProduct(prod.id, prod.firstname)} className='btn btn-danger'>
                                                     <i className='fa-solid fa-trash'></i>
                                                 </button>
                                             </td>
@@ -151,7 +148,7 @@ const ShowUsers = () => {
                     </div>
                 </div>
             </div>
-            <div id='modalUsers' className='modal fade' aria-hidden='true'>
+            <div id='modalProducts' className='modal fade' aria-hidden='true'>
                 <div className='modal-dialog'>
                     <div className='modal-content'>
                         <div className='modal-header'>
@@ -167,13 +164,13 @@ const ShowUsers = () => {
                             </div>
                             <div className='input-group mb-3'>
                                 <span className='input-group-text'><i className='fa-solid fa-comment'></i></span>
-                                <input type='email' id='Email' className='form-control' placeholder='Email' value={Email}
-                                    onChange={(e) => setEmail(e.target.value)}></input>
+                                <input type='number' id='lastname' className='form-control' placeholder='Price' value={Price}
+                                    onChange={(e) => setPrice(e.target.value)}></input>
                             </div>
                             <div className='input-group mb-3'>
                                 <span className='input-group-text'><i className='fa-solid fa-comment'></i></span>
-                                <input type='password' id='Password' className='form-control' placeholder='Password' value={Password}
-                                    onChange={(e) => setPassword(e.target.value)}></input>
+                                <input type='text' id='lastname' className='form-control' placeholder='imagen' value={img}
+                                    onChange={(e) => setImg(e.target.value)}></input>
                             </div>
                             <div className='d-grid col-6 mx-auto'>
                                 <button onClick={() => validar()} className='btn btn-success'>
@@ -189,8 +186,9 @@ const ShowUsers = () => {
             </div>
         </div>
     )
-}
+    }
 
 
-export default ShowUsers
 
+
+export default ShowProducts
